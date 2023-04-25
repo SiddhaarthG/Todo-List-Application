@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable semi */
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
 const { request, response } = require("express");

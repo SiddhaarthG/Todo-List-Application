@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable semi */
 /* eslint-disable quotes */
 const request = require("supertest");
 
