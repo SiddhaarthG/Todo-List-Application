@@ -69,7 +69,7 @@ app.delete("/todos/:id/", async (request, response) => {
         id: request.params.id,
       },
     });
-    return response.json(deleteTodo);
+    return response.send(deleteTodo > 0);
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
