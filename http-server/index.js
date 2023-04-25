@@ -1,6 +1,6 @@
 const http = require('http')
 const fs = require('fs')
-const port = require("minimist")(process.argv.slice(2));
+const port = require('minimist')(process.argv.slice(2))
 
 let homeContent = ''
 let projectContent = ''
