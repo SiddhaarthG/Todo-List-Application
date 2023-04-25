@@ -86,5 +86,8 @@ describe("Todo Application", function () {
     const deleteTodo = await agent.delete(`/todos/${todoID}`).send();
     const parsedRemoveResponse = JSON.parse(deleteTodo.text);
     expect(parsedRemoveResponse).toBe(1);
+    // if an item is deleted it returns no.of items deleted
+    // which in our case is 1 whose boolean representation is true
+    expect(Boolean(parsedRemoveResponse)).toBe(true);
   });
 });
