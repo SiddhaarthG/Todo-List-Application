@@ -10,7 +10,13 @@
 </head>
 <body>
   <%- include('header.ejs') %> <br>
-  <table>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>DueDate</th>
+      <th>Completed</th>
+    </tr>
     <%- include('todos.ejs') %>
   </table>
    <br>
