@@ -9,16 +9,8 @@
   <title>My To-Do Application</title>
 </head>
 <body>
-  <%- include('header.ejs') %>
-  <table>
-    <% for(var i=0;i< allTodos.length;i++) { %>
-      <tr>
-        <td>
-          <%= allTodos.title[i] %>
-        </td>
-      </tr>
-    <% } %>
-
-  </table>
+  <%- include('header.ejs') %> <br>
+  <%- include('todos.ejs') %> <br>
+  <%- include('footer.ejs') %>
 </body>
 </html>
