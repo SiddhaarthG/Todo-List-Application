@@ -19,42 +19,47 @@ module.exports = (sequelize, DataTypes) => {
       return this.create({ title: title, dueDate: dueDate, completed: false });
     }
 
-    static getTodos() {
+    static async getTodos() {
       return this.findAll();
     }
 
-    static getOverdue() {
+    static async getOverdue() {
       let today = new Date().toISOString().split("T")[0];
       return this.findAll({
         where: {
           dueDate: {
             [Op.lt]: today,
           },
-          completed: false,
         },
       });
     }
 
-    static getDueToday() {
+    static async getDueToday() {
       let today = new Date().toISOString().split("T")[0];
       return this.findAll({
         where: {
           dueDate: {
             [Op.eq]: today,
           },
-          completed: false,
         },
       });
     }
 
-    static getDueLater() {
+    static async getDueLater() {
       let today = new Date().toISOString().split("T")[0];
       return this.findAll({
         where: {
           dueDate: {
             [Op.gt]: today,
           },
-          completed: false,
+        },
+      });
+    }
+
+    static async remove(id) {
+      return this.destroy({
+        where: {
+          id,
         },
       });
     }
