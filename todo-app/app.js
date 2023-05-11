@@ -23,11 +23,13 @@ app.get("/", async (request, response) => {
   const listOverdue = await Todo.getOverdue();
   const listDueToday = await Todo.getDueToday();
   const listDueLater = await Todo.getDueLater();
+  const listCompleted = await Todo.getCompletedTodos();
   if (request.accepts("html")) {
     response.render("index", {
       listOverdue,
       listDueToday,
       listDueLater,
+      listCompleted,
       csrfToken: request.csrfToken(),
     });
   } else {
@@ -35,6 +37,7 @@ app.get("/", async (request, response) => {
       listOverdue,
       listDueToday,
       listDueLater,
+      listCompleted,
     });
   }
 });
@@ -43,7 +46,7 @@ app.get("/todos", async function (request, response) {
   console.log("Processing list of all Todos ...");
   // FILL IN YOUR CODE HERE
   try {
-    const todo = await Todo.findAll();
+    const todo = await Todo.getTodos();
     return response.send(todo);
   } catch (error) {
     console.log(error);
@@ -75,11 +78,11 @@ app.post("/todos", async (request, response) => {
   }
 });
 
-app.put("/todos/:id/markAsCompleted", async (request, response) => {
+app.put("/todos/:id/", async (request, response) => {
   console.log("We have to update a todo with ID: ", request.params.id);
   const todo = await Todo.findByPk(request.params.id);
   try {
-    const updateTodo = await todo.markAsCompleted();
+    const updateTodo = await todo.setCompletionStatus();
     return response.json(updateTodo);
   } catch (error) {
     console.log(error);
@@ -90,8 +93,8 @@ app.put("/todos/:id/markAsCompleted", async (request, response) => {
 app.delete("/todos/:id/", async (request, response) => {
   console.log("Delete a todo with ID: ", request.params.id);
   try {
-    await Todo.remove(request.params.id);
-    return response.json({ success: true });
+    const deleteTodo = await Todo.remove(request.params.id);
+    return response.json(deleteTodo > 0);
   } catch (error) {
     return response.status(422).json(error);
   }

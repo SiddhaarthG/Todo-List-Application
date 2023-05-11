@@ -42,7 +42,7 @@ describe("Todo Application", function () {
     expect(response.statusCode).toBe(302);
   });
 
-  test("Marks a todo with the given ID as complete", async () => {
+  test("Update a todo with the given ID as complete", async () => {
     let res = await agent.get("/");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/todos").send({
@@ -62,7 +62,7 @@ describe("Todo Application", function () {
     csrfToken = extractCsrfToken(res);
 
     const markCompleteResponse = await agent
-      .put(`/todos/${latestTodo.id}/markAsCompleted`)
+      .put(`/todos/${latestTodo.id}`)
       .send({
         _csrf: csrfToken,
       });
@@ -70,25 +70,24 @@ describe("Todo Application", function () {
     expect(parsedUpdatedResponse.completed).toBe(true);
   });
 
-  // test("Fetches all todos in the database using /todos endpoint", async () => {
-  //   await agent.post("/todos").send({
-  //     title: "Buy xbox",
-  //     dueDate: new Date().toISOString(),
-  //     completed: false,
-  //   });
-  //   await agent.post("/todos").send({
-  //     title: "Buy ps3",
-  //     dueDate: new Date().toISOString(),
-  //     completed: false,
-  //   });
-  //   const response = await agent.get("/todos");
-  //   const parsedResponse = JSON.parse(response.text);
+  test("Fetches all todos in the database using /todos endpoint", async () => {
+    await agent.post("/todos").send({
+      title: "Buy xbox",
+      dueDate: new Date().toISOString(),
+      completed: false,
+    });
+    await agent.post("/todos").send({
+      title: "Buy ps3",
+      dueDate: new Date().toISOString(),
+      completed: false,
+    });
+    const response = await agent.get("/todos");
+    const parsedResponse = JSON.parse(response.text);
 
-  //   expect(parsedResponse.length).toBe(4);
-  //   expect(parsedResponse[3].title).toBe("Buy ps3");
-  // });
+    expect(parsedResponse.length).toBe(2);
+  });
 
-  // test("Deletes a todo with the given ID if it exists and sends a boolean response", async () => {
+  // test("Deletes a todo with the given ID ", async () => {
   //   // FILL IN YOUR CODE HERE
   //   const response = await agent.post("/todos").send({
   //     title: "Submit task",
@@ -100,6 +99,6 @@ describe("Todo Application", function () {
   //   const todoID = parsedResponse.id;
   //   expect(parsedResponse.completed).toBe(false);
   //   const deleteTodo = await agent.delete(`/todos/${todoID}`).send();
-  //   expect(deleteTodo.text).toBe("true");
+  //   expect(deleteTodo.text).toBe(true);
   // });
 });

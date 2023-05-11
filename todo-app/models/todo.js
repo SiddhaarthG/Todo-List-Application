@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.lt]: today,
           },
+          completed: false,
         },
       });
     }
@@ -41,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.eq]: today,
           },
+          completed: false,
         },
       });
     }
@@ -52,6 +54,15 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.gt]: today,
           },
+          completed: false,
+        },
+      });
+    }
+
+    static async getCompletedTodos() {
+      return this.findAll({
+        where: {
+          completed: true,
         },
       });
     }
@@ -64,8 +75,10 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    markAsCompleted() {
-      return this.update({ completed: true });
+    setCompletionStatus(id) {
+      return this.update({
+        completed: true,
+      });
     }
   }
   Todo.init(
