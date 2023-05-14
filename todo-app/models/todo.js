@@ -75,9 +75,9 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    setCompletionStatus(id) {
+    setCompletionStatus(check) {
       return this.update({
-        completed: true,
+        completed: check,
       });
     }
   }

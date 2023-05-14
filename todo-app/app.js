@@ -82,7 +82,7 @@ app.put("/todos/:id/", async (request, response) => {
   console.log("We have to update a todo with ID: ", request.params.id);
   const todo = await Todo.findByPk(request.params.id);
   try {
-    const updateTodo = await todo.setCompletionStatus();
+    const updateTodo = await todo.setCompletionStatus(request.body.completed);
     return response.json(updateTodo);
   } catch (error) {
     console.log(error);
@@ -93,8 +93,8 @@ app.put("/todos/:id/", async (request, response) => {
 app.delete("/todos/:id/", async (request, response) => {
   console.log("Delete a todo with ID: ", request.params.id);
   try {
-    const deleteTodo = await Todo.remove(request.params.id);
-    return response.json(deleteTodo > 0);
+    await Todo.remove(request.params.id);
+    return response.json({ success: true });
   } catch (error) {
     return response.status(422).json(error);
   }
