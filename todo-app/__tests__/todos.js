@@ -54,11 +54,9 @@ describe("Todo Application", function () {
     const groupedTodosResponse = await agent
       .get("/")
       .set("Accept", "application/json");
-    // console.log(groupedTodosResponse)
     const parsedGroupedResponse = JSON.parse(groupedTodosResponse.text);
     const dueTodayCount = parsedGroupedResponse.listDueToday.length;
     const latestTodo = parsedGroupedResponse.listDueToday[dueTodayCount - 1];
-    // console.log(latestTodo)
 
     res = await agent.get(`/`);
     csrfToken = extractCsrfToken(res);
