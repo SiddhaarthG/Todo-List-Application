@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async getOverdue() {
-      let today = new Date().toISOString().split("T")[0];
+      let today = new Date().toISOString();
       return this.findAll({
         where: {
           dueDate: {
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async getDueToday() {
-      let today = new Date().toISOString().split("T")[0];
+      let today = new Date().toISOString();
       return this.findAll({
         where: {
           dueDate: {
@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async getDueLater() {
-      let today = new Date().toISOString().split("T")[0];
+      let today = new Date().toISOString();
       return this.findAll({
         where: {
           dueDate: {
