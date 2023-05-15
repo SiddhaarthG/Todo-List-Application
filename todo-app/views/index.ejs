@@ -65,9 +65,14 @@
           </div>
         </div>
       </form>
-      <%- include('todos.ejs') %>
+      <div>
+        <%- include('todos.ejs', {title: "Overdue", data: listOverdue}) %>
+        <%- include('todos.ejs', {title: "Due Today", data: listDueToday}) %>
+        <%- include('todos.ejs', {title: "Due Later", data: listDueLater}) %>
+        <%- include('todos.ejs', {title: "Completed Items", data: listCompleted}) %>
+      </div>
     </div>
-    <%- include('footer.ejs') %>
   </div>
+  <%- include('footer.ejs') %>
 </body>
 </html>
