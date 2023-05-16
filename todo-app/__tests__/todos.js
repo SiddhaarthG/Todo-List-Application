@@ -77,18 +77,37 @@ describe("Todo Application", function () {
     await agent.post("/todos").send({
       title: "Buy meat",
       dueDate: new Date().toISOString(),
-      completed: true,
       _csrf: csrfToken,
     });
+
+    const groupedTodosResponse1 = await agent
+      .get("/")
+      .set("Accept", "application/json");
+    const parsedGroupedResponse1 = JSON.parse(groupedTodosResponse1.text);
+    const dueTodayCount1 = parsedGroupedResponse1.alltodos.length;
+    const latestTodo1 = parsedGroupedResponse1.alltodos[dueTodayCount1 - 1];
+
+    res = await agent.get("/");
+    csrfToken = extractCsrfToken(res);
+
+    const markCompleteResponse = await agent
+      .put(`/todos/${latestTodo1.id}`)
+      .send({
+        completed: true,
+        _csrf: csrfToken,
+      });
+    const parsedUpdatedResponse1 = JSON.parse(markCompleteResponse.text);
+    expect(parsedUpdatedResponse1.completed).toBe(true);
+
+    res = await agent.get("/");
+    csrfToken = extractCsrfToken(res);
+
     const groupedTodosResponse = await agent
       .get("/")
       .set("Accept", "application/json");
     const parsedGroupedResponse = JSON.parse(groupedTodosResponse.text);
     const dueTodayCount = parsedGroupedResponse.alltodos.length;
     const latestTodo = parsedGroupedResponse.alltodos[dueTodayCount - 1];
-
-    res = await agent.get("/");
-    csrfToken = extractCsrfToken(res);
 
     const markIncompleteResponse = await agent
       .put(`/todos/${latestTodo.id}`)
