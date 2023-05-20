@@ -7,7 +7,7 @@
   <meta name="csrf-token" content="<%= csrfToken %>" />
   <link rel="stylesheet" href="./css/styles.css">
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>My To-Do Application</title>
+  <title><%= title %></title>
   <script>
     var token = document
     .querySelector('meta[name="csrf-token"]')
@@ -51,6 +51,9 @@
   <div class="grid grid-cols-6">
     <div class="col-start-3 col-span-2">
       <%- include('header.ejs') %> 
+      <p class="py-2">Welcome to the To-Do Manager</p>
+      <p class="py-2">New here? <a href="/signup" class="text-green-600">Sign-up now</a></p>
+      <p class="py-2">Already have an account? <a href="/login" class="text-green-600">Sign-in</a></p>
       <form action="/todos" method="post">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
         <div class="flex py-6 gap-3">

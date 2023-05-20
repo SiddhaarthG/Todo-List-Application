@@ -5,8 +5,14 @@
 const { request, response } = require("express");
 const express = require("express");
 const csrf = require("tiny-csrf");
+
+const passport = require("passport");
+const connectEnsureLogin = require("connect-ensure-login");
+const session = require("express-session");
+const LocalStrategy = require("passport-local");
+
 const app = express();
-const { Todo } = require("./models");
+const { Todo, User } = require("./models");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -19,6 +25,51 @@ app.set("view engine", "ejs");
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(
+  session({
+    secret: "my-super-secret-key-852456963741789123",
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 24hrs
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+    },
+    (username, password, done) => {
+      User.findOne({ where: { email: username, password } })
+        .then((user) => {
+          return done(null, user);
+        })
+        .catch((error) => {
+          return error;
+        });
+    }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  console.log("Serializing user in session", user.id);
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findByPk(id)
+    .then((user) => {
+      done(null, user);
+    })
+    .catch((error) => {
+      done(error, null);
+    });
+});
+
 app.get("/", async (request, response) => {
   const listOverdue = await Todo.getOverdue();
   const listDueToday = await Todo.getDueToday();
@@ -27,6 +78,7 @@ app.get("/", async (request, response) => {
   const alltodos = await Todo.getTodos();
   if (request.accepts("html")) {
     response.render("index", {
+      title: "My To-Do Application",
       listOverdue,
       listDueToday,
       listDueLater,
@@ -42,6 +94,27 @@ app.get("/", async (request, response) => {
       listCompleted,
       alltodos,
     });
+  }
+});
+
+app.get("/signup", (request, response) => {
+  response.render("signup", {
+    title: "Signup",
+    csrfToken: request.csrfToken(),
+  });
+});
+
+app.post("/users", async (request, response) => {
+  try {
+    const user = await User.create({
+      firstName: request.body.firstName,
+      lastName: request.body.lastName,
+      email: request.body.email,
+      password: request.body.password,
+    });
+    response.redirect("/");
+  } catch (error) {
+    console.log(error);
   }
 });
 
