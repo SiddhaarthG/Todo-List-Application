@@ -213,4 +213,65 @@ describe("Todo Application", function () {
     });
     expect(markCompleteResponse.statusCode).toBe(500);
   });
+
+  test("Verify a user cannot markAsInComplete other user's todos ", async () => {
+    let agent = request.agent(server);
+    // Signing in as user A
+    await login(agent, "user.a@test.com", "123456789");
+    let res = await agent.get("/todo");
+    let csrfToken = extractCsrfToken(res);
+
+    res = await agent.get("/todo");
+    csrfToken = extractCsrfToken(res);
+    const userA = await agent.post("/todos").send({
+      title: "verify test markAsComplete",
+      dueDate: new Date().toISOString(),
+      completed: false,
+      _csrf: csrfToken,
+    });
+    await agent.get("/signout");
+
+    agent = request.agent(server);
+    // Signing in as user B
+    await login(agent, "user.b@test.com", "987654321");
+    res = await agent.get("/todo");
+    csrfToken = extractCsrfToken(res);
+
+    const markAsInCompleteResponse = await agent
+      .put(`/todos/${userA.id}`)
+      .send({
+        completed: false,
+        _csrf: csrfToken,
+      });
+    expect(markAsInCompleteResponse.statusCode).toBe(500);
+  });
+
+  test("Verify a user cannot delete other user's todos ", async () => {
+    let agent = request.agent(server);
+    // Signing in as user A
+    await login(agent, "user.a@test.com", "123456789");
+    let res = await agent.get("/todo");
+    let csrfToken = extractCsrfToken(res);
+
+    res = await agent.get("/todo");
+    csrfToken = extractCsrfToken(res);
+    const userA = await agent.post("/todos").send({
+      title: "verify test markAsComplete",
+      dueDate: new Date().toISOString(),
+      completed: false,
+      _csrf: csrfToken,
+    });
+    await agent.get("/signout");
+
+    agent = request.agent(server);
+    // Signing in as user B
+    await login(agent, "user.b@test.com", "987654321");
+    res = await agent.get("/todo");
+    csrfToken = extractCsrfToken(res);
+
+    const removedResponse = await agent.delete(`/todos/${userA.id}`).send({
+      _csrf: csrfToken,
+    });
+    expect(removedResponse.statusCode).toBe(500);
+  });
 });
