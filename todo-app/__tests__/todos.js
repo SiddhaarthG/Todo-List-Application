@@ -183,4 +183,34 @@ describe("Todo Application", function () {
       });
     expect(removedResponse.status).toBe(200);
   });
+
+  test("Verify a user cannot markAsComplete other user's todos ", async () => {
+    let agent = request.agent(server);
+    // Signing in as user A
+    await login(agent, "user.a@test.com", "123456789");
+    let res = await agent.get("/todo");
+    let csrfToken = extractCsrfToken(res);
+
+    res = await agent.get("/todo");
+    csrfToken = extractCsrfToken(res);
+    const userA = await agent.post("/todos").send({
+      title: "verify test markAsComplete",
+      dueDate: new Date().toISOString(),
+      completed: false,
+      _csrf: csrfToken,
+    });
+    await agent.get("/signout");
+
+    agent = request.agent(server);
+    // Signing in as user B
+    await login(agent, "user.b@test.com", "987654321");
+    res = await agent.get("/todo");
+    csrfToken = extractCsrfToken(res);
+
+    const markCompleteResponse = await agent.put(`/todos/${userA.id}`).send({
+      completed: true,
+      _csrf: csrfToken,
+    });
+    expect(markCompleteResponse.statusCode).toBe(500);
+  });
 });
