@@ -87,7 +87,10 @@ passport.deserializeUser((id, done) => {
 });
 
 app.get("/", async (request, response) => {
-  response.render("index", {
+  if (request.user) {
+    return response.redirect("/todos");
+  }
+  return response.render("index", {
     title: "My To-Do Application",
     csrfToken: request.csrfToken(),
   });
@@ -111,6 +114,7 @@ app.get(
         listDueLater,
         listCompleted,
         alltodos,
+        loggedInUser: request.user,
         csrfToken: request.csrfToken(),
       });
     } else {
@@ -125,14 +129,42 @@ app.get(
   }
 );
 
-app.get("/signup", (request, response) => {
-  response.render("signup", {
+app.get("/signup", async (request, response) => {
+  if (request.user) {
+    return await response.redirect("/todo");
+  }
+  return await response.render("signup", {
     title: "Signup",
     csrfToken: request.csrfToken(),
   });
 });
 
 app.post("/users", async (request, response) => {
+  // checking if the username is not of blank spaces
+  const trimmedFirstName = request.body.firstName.trim();
+  if (trimmedFirstName === "") {
+    request.flash(
+      "error",
+      "First Name cannot be Empty and should not contain spaces at beginning or ending"
+    );
+  }
+  if (request.body.email === "") {
+    request.flash("error", "Email cannot be Empty");
+  }
+  const trimmedPassword = request.body.password.trim();
+  if (trimmedPassword.length === 0) {
+    request.flash(
+      "error",
+      "Password cannot be Empty and should not contain spaces at beginning or ending"
+    );
+  }
+  if (
+    trimmedFirstName === "" ||
+    request.body.email === "" ||
+    trimmedPassword.length === 0
+  ) {
+    return response.redirect("/signup");
+  }
   const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
   console.log(hashedPwd);
   try {
@@ -150,6 +182,8 @@ app.post("/users", async (request, response) => {
     });
   } catch (error) {
     console.log(error);
+    request.flash("error", "User with this mail already exist, try Sign in");
+    return response.redirect("/signup");
   }
 });
 
