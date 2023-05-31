@@ -226,7 +226,7 @@ describe("Todo Application", function () {
     const userA = await agent.post("/todos").send({
       title: "verify test markAsComplete",
       dueDate: new Date().toISOString(),
-      completed: false,
+      completed: true,
       _csrf: csrfToken,
     });
     await agent.get("/signout");
